@@ -1,0 +1,7 @@
+.bundle/
+.repo/
+.lock
+.sass-cache/
+.DS_Store
+*.pyc
+*.swp
