@@ -4,13 +4,14 @@ require 'digest/md5'
 require 'set'
 require 'childprocess'
 require 'fileutils'
+require 'json'
 include FileUtils
 
 TEST_FRAMES = 100
 START_TIME = "00:00:20"
-SEARCH_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/video")
-TMP_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/tmp")
-TILES_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/tiles")
+SEARCH_DIR = File.expand_path("video/")
+TMP_DIR = File.expand_path("tmp/")
+TILES_DIR = File.expand_path("tiles/")
 
 # Create directories if they don't exist
 mkdir SEARCH_DIR if ! File.directory?(SEARCH_DIR)
@@ -19,7 +20,6 @@ mkdir TILES_DIR if ! File.directory?(TILES_DIR)
 
 # Helper to run command silently and raise exception if didn't run correctly
 def quietrun(cmd)
-    print cmd.join(" ")
     process = ChildProcess.build(*cmd)
     process.start
     begin
@@ -56,10 +56,10 @@ Dir.chdir(TMP_DIR) do
       quietrun(['convert', '-colorspace', 'gray', '-crop', '80x120', frame, '../tiles/tile%03d.png'])
       print "%s\n" % frame
 
-      Find.find(TILES_DIR) do |tile|
-        # do Centroid of Gradient Orientations calculation
-        print " %s\n" % tile
-      end
+      #exec(['python', 'centroid/centroid.py', TILES_DIR+"/tile*.png"].join(" "))
+      #out.
+      
+      p IO.popen(['python', 'centroid/centroid.py', TILES_DIR+"/tile*.png"]).read
     end
 
     exit
