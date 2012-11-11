@@ -51,18 +51,15 @@ Dir.chdir(TMP_DIR) do
       next
     end
 
+    scores = []
     print "|| ImageMagick tiles "
     Find.find(TMP_DIR) do |frame|
       quietrun(['convert', '-colorspace', 'gray', '-crop', '80x120', frame, '../tiles/tile%03d.png'])
-      print "%s\n" % frame
 
-      #exec(['python', 'centroid/centroid.py', TILES_DIR+"/tile*.png"].join(" "))
-      #out.
-      
-      p IO.popen(['python', 'centroid/centroid.py', TILES_DIR+"/tile*.png"]).read
+      scores.push(IO.popen(['python', File.expand_path("../centroid/centroid.py"), TILES_DIR+"/tile*.png"]).read.strip)
     end
 
-    exit
+    File.open(filename+".json", 'w+') { |file| file.write(scores.to_json) }
 
     # Delete the images created by mogrify and mplayer
     #rm(%x(ls *.jpg).split("\n"))
