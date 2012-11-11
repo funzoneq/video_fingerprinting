@@ -5,6 +5,8 @@ from math import *
 from collections import namedtuple
 import json
 
+from glob import glob
+
 vector = namedtuple("vector", "x y")
 vector.length = lambda self: sqrt(self.x**2 + self.y**2)
 
@@ -16,26 +18,28 @@ def G(data, x, y):
 
 def main():
     
-    result = []
-    for filename in sys.argv[1:]:
-        try:
-            img = Image.open( filename )
-        except:
-            print >>sys.stderr, "couldn't open", filename
-            continue
+    for pattern in sys.argv[1:]:
+        result = []
+        files = sorted(glob(pattern))
+        for filename in files:
+            try:
+                img = Image.open( filename )
+            except:
+                print >>sys.stderr, "couldn't open", filename
+                continue
+            
+            data = img.load()
+            ras = []
+            for y in xrange(1,img.size[1]-1):
+                for x in xrange(1,img.size[0]-1):
+                    g = G(data, x, y)
+                    ra = vector2ra(g)
+                    ras.append( ra )
         
-        data = img.load()
-        ras = []
-        for y in xrange(1,img.size[1]-1):
-            for x in xrange(1,img.size[0]-1):
-                g = G(data, x, y)
-                ra = vector2ra(g)
-                ras.append( ra )
-    
-        c = sum(map(lambda x: x.r*x.a, ras)) / sum(map(lambda x: x.r, ras)) #6
-        
-        result.append( c )
-    print json.dumps(result)
+            c = sum(map(lambda x: x.r*x.a, ras)) / sum(map(lambda x: x.r, ras)) #6
+            
+            result.append( c )
+        print json.dumps(result)
     
 if __name__ == "__main__":
     main()
