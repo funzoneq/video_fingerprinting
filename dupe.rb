@@ -20,6 +20,7 @@ mkdir TILES_DIR if ! File.directory?(TILES_DIR)
 
 # Helper to run command silently and raise exception if didn't run correctly
 def quietrun(cmd)
+    print cmd.join(" ")
     process = ChildProcess.build(*cmd)
     process.start
     begin
@@ -56,7 +57,8 @@ Dir.chdir(TMP_DIR) do
     Find.find(TMP_DIR) do |frame|
       quietrun(['convert', '-colorspace', 'gray', '-crop', '80x120', frame, '../tiles/tile%03d.png'])
 
-      scores.push(IO.popen(['python', File.expand_path("../centroid/centroid.py"), TILES_DIR+"/tile*.png"]).read.strip)
+      scores.push(JSON.parse(IO.popen(['python', File.expand_path("../centroid/centroid.py"), TILES_DIR+"/tile*.png"]).read.strip))
+      print "."
     end
 
     File.open(filename+".json", 'w+') { |file| file.write(scores.to_json) }
