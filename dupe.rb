@@ -6,7 +6,7 @@ require 'childprocess'
 require 'fileutils'
 include FileUtils
 
-TEST_FRAMES = 50
+TEST_FRAMES = 100
 START_TIME = "00:00:20"
 SEARCH_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/video")
 TMP_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/tmp")
@@ -19,6 +19,7 @@ mkdir TILES_DIR if ! File.directory?(TILES_DIR)
 
 # Helper to run command silently and raise exception if didn't run correctly
 def quietrun(cmd)
+    print cmd.join(" ")
     process = ChildProcess.build(*cmd)
     process.start
     begin
@@ -39,7 +40,7 @@ Dir.chdir(TMP_DIR) do
 
     # Get some frames with mplayer
     print "\tMplayer "
-    if quietrun(['mplayer', '-nosound', '-vo', 'jpeg', '-ss', START_TIME, '-frames', TEST_FRAMES.to_s, filename]) != 0
+    if quietrun(['mplayer', '-nosound', '-vo', 'jpeg', '-fps', '10', '-vf', 'scale=320:240', '-ss', START_TIME, '-frames', TEST_FRAMES.to_s, filename]) != 0
       print "...failed, skipping...\n"
       next
     end
@@ -50,13 +51,9 @@ Dir.chdir(TMP_DIR) do
       next
     end
 
-    # Create grayscale images
-    print "|| ImageMagick resize "
-    quietrun(['mogrify', '-resize', '476x270!', '-colorspace', 'gray', '*.jpg'])
-
     print "|| ImageMagick tiles "
     Find.find(TMP_DIR) do |frame|
-      quietrun(['convert', '-crop', '119x135', frame, '../tiles/tile%03d.png'])
+      quietrun(['convert', '-colorspace', 'gray', '-crop', '80x120', frame, '../tiles/tile%03d.png'])
       print "%s\n" % frame
 
       Find.find(TILES_DIR) do |tile|
