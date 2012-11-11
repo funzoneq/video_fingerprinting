@@ -8,13 +8,14 @@ include FileUtils
 
 TEST_FRAMES = 50
 START_TIME = "00:00:20"
-SEARCH_DIR = File.expand_path("/Users/arnoud/Desktop/dumpert-duplicates/video")
-TMP_DIR = File.expand_path("/Users/arnoud/Desktop/dumpert-duplicates/tmp")
-TILES_DIR = File.expand_path(TMP_DIR + "/tiles")
+SEARCH_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/video")
+TMP_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/tmp")
+TILES_DIR = File.expand_path("/Users/arnoud/Documents/video_fingerprinting/tiles")
 
 # Create directories if they don't exist
 mkdir SEARCH_DIR if ! File.directory?(SEARCH_DIR)
 mkdir TMP_DIR if ! File.directory?(TMP_DIR)
+mkdir TILES_DIR if ! File.directory?(TILES_DIR)
 
 # Helper to run command silently and raise exception if didn't run correctly
 def quietrun(cmd)
@@ -55,7 +56,7 @@ Dir.chdir(TMP_DIR) do
 
     print "|| ImageMagick tiles "
     Find.find(TMP_DIR) do |frame|
-      quietrun(['convert', '-crop', '119x135', frame, 'tiles/tile%03d.png'])
+      quietrun(['convert', '-crop', '119x135', frame, '../tiles/tile%03d.png'])
       print "%s\n" % frame
 
       Find.find(TILES_DIR) do |tile|
