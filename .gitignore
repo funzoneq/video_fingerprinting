@@ -5,3 +5,4 @@
 .DS_Store
 *.pyc
 *.swp
+.c9revisions/

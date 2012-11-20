@@ -64,7 +64,7 @@ Dir.chdir(TMP_DIR) do
     File.open(filename+".json", 'w+') { |file| file.write(scores.to_json) }
 
     # Delete the images created by mogrify and mplayer
-    #rm(%x(ls *.jpg).split("\n"))
+    rm(%x(ls *.jpg).split("\n"))
 
   end
 end
